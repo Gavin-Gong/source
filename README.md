@@ -5,3 +5,5 @@
 - vue-async-computed
 
 
+## WIP
+- vue-rx
