@@ -10,9 +10,11 @@ import eventToObservable from './methods/eventToObservable'
 import createObservableMethod from './methods/createObservableMethod'
 
 export default function VueRx (Vue) {
-  install(Vue)
-  Vue.mixin(rxMixin)
-  Vue.directive('stream', streamDirective)
+  install(Vue) // 这个有点迷
+  Vue.mixin(rxMixin) // 全局混合
+  Vue.directive('stream', streamDirective) // 注册指令 -> v-stream
+
+  // 一言不合写到原型上去
   Vue.prototype.$watchAsObservable = watchAsObservable
   Vue.prototype.$fromDOMEvent = fromDOMEvent
   Vue.prototype.$subscribeTo = subscribeTo

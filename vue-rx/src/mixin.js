@@ -3,15 +3,17 @@ import { Subject, Subscription } from 'rxjs'
 
 export default {
   created () {
-    const vm = this
-    const domStreams = vm.$options.domStreams
+    const vm = this // 所在组件实例 
+    const domStreams = vm.$options.domStreams // 配置的选项
+
+    // TODO: 不判断是不是数组?
     if (domStreams) {
       domStreams.forEach(key => {
-        vm[key] = new Subject()
+        vm[key] = new Subject() // 为每个 key 绑定一个 Subject 实例
       })
     }
 
-    const observableMethods = vm.$options.observableMethods
+    const observableMethods = vm.$options.observableMethods // observable 方法
     if (observableMethods) {
       if (Array.isArray(observableMethods)) {
         observableMethods.forEach(methodName => {
@@ -49,6 +51,7 @@ export default {
   },
 
   beforeDestroy () {
+    // 解绑订阅
     if (this._subscription) {
       this._subscription.unsubscribe()
     }
