@@ -18,7 +18,7 @@ export default function VueRx (Vue) {
   Vue.prototype.$watchAsObservable = watchAsObservable
   Vue.prototype.$fromDOMEvent = fromDOMEvent
   Vue.prototype.$subscribeTo = subscribeTo
-  Vue.prototype.$eventToObservable = eventToObservable
+  Vue.prototype.$eventToObservable = eventToObservable // 将 Vue 内部事件转化为 Observale
   Vue.prototype.$createObservableMethod = createObservableMethod
 }
 

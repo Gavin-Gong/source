@@ -1,13 +1,14 @@
 import { isObserver, warn, getKey } from '../util'
 import { fromEvent } from 'rxjs'
 
+// v-stream 指令
 export default {
   // Example ./example/counter_dir.html
   bind (el, binding, vnode) {
-    let handle = binding.value
-    const event = binding.arg
-    const streamName = binding.expression
-    const modifiers = binding.modifiers
+    let handle = binding.value // =值
+    const event = binding.arg // :参数
+    const streamName = binding.expression // 表达式(未计算的)
+    const modifiers = binding.modifiers // .修饰符
 
     if (isObserver(handle)) {
       handle = { subject: handle }
@@ -21,6 +22,7 @@ export default {
       return
     }
 
+    // 修饰符
     const modifiersFuncs = {
       stop: e => e.stopPropagation(),
       prevent: e => e.preventDefault()
@@ -56,7 +58,7 @@ export default {
       ;(el._rxHandles || (el._rxHandles = {}))[getKey(binding)] = handle
     }
   },
-
+  // vnode 更新之后的值
   update (el, binding) {
     const handle = binding.value
     const _handle = el._rxHandles && el._rxHandles[getKey(binding)]
@@ -64,7 +66,7 @@ export default {
       _handle.data = handle.data
     }
   },
-
+  // 指令从元素移除调用一次
   unbind (el, binding) {
     const key = getKey(binding)
     const handle = el._rxHandles && el._rxHandles[key]

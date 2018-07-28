@@ -34,6 +34,7 @@ export function makeLazyComputed (key) {
       return this[lazyDataPrefix + key]
     },
     set (value) {
+      // 计算属性默认只有 getter ，也可以提供一个 setter
       this[lazyDataPrefix + key] = value
     }
   }

@@ -6,7 +6,7 @@ export default {
     const vm = this // 所在组件实例 
     const domStreams = vm.$options.domStreams // 配置的选项
 
-    // TODO: 不判断是不是数组?
+    // WARNING: 不判断是不是数组?
     if (domStreams) {
       domStreams.forEach(key => {
         vm[key] = new Subject() // 为每个 key 绑定一个 Subject 实例
