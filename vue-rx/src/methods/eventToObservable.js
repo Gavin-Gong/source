@@ -15,7 +15,7 @@ export default function eventToObservable (evtName) {
       vm.$on(name, callback) // 监听事件
       return { name, callback }
     })
-    // WARNING: 为什么要返回函数??
+    // 返回函数 unsubscribe 的时候会调用这个函数解绑事件, 其实也可以返回 { unsubscribe: () => {xx} }
     return () => {
       // Only remove the specific callback
       eventPairs.forEach(pair => vm.$off(pair.name, pair.callback)) // 移除事件监听

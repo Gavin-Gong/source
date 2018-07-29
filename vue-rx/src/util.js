@@ -4,6 +4,9 @@ export let warn = function () {}
 // NOTE(benlesh): the value of this method seems dubious now, but I'm not sure
 // if this is a Vue convention I'm just not familiar with. Perhaps it would
 // be better to just import and use Vue directly?
+/**
+ * @desc 在安装 vue-rx 时候把 Vue 里面的 warn 函数给弄出来
+ */
 export function install (_Vue) {
   Vue = _Vue
   warn = Vue.util.warn || warn
@@ -37,12 +40,14 @@ export function defineReactive (vm, key, val) {
   if (key in vm) {
     vm[key] = val
   } else {
+    // 调用 Vue定义响应式的方法
+    // TODO: 为什么不用 Vue.set 呢?
     Vue.util.defineReactive(vm, key, val)
   }
 }
 
 /**
- * @desc Vue 指令工具函数
+ * @desc Vue 指令工具函数, 用参数和装饰符 生成一个 key
  * @param {*} binding 
  */
 export function getKey (binding) {

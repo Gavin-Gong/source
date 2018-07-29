@@ -3,7 +3,7 @@ import { Observable, Subscription } from 'rxjs'
 /**
  * @desc 将 watcher 转化为 Observable
  * @param {*} expOrFn 要监听的表达式或者函数 => watch 可以使用表达式和函数作为参数
- * @param {*} options Vue watch API 的附加选项 
+ * @param {*} options Vue watch API 的附加选项 例如 { deep: true, immdediate: true }
  */
 export default function watchAsObservable (expOrFn, options) {
   const vm = this // Vue 实例
@@ -24,10 +24,10 @@ export default function watchAsObservable (expOrFn, options) {
 
     // 根据实例上的 _data 判断是够初始化 data了 (created 之前, beforeCreate 之后 初始化响应式数据)
     if (vm._data) {
-      // TODO: 此时应该在 created 周期之后
+      // 此时应该在 created 周期之后
       watch()
     } else {
-      vm.$once('hook:created', watch) // 内置钩子一次监听
+      vm.$once('hook:created', watch) // 内置钩子一次监听, 一旦 created 就开始 watch
     }
 
     // Returns function which disconnects the $watch expression
