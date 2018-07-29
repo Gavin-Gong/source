@@ -5,7 +5,8 @@
 ## 已完成
 
 - vue-async-computed
+- vue-rx
 
 ## WIP
 
-- vue-rx
+- vuex
