@@ -307,7 +307,7 @@ function installModule (store, rootState, path, module, hot) {
   module.forEachChild((child, key) => {
     installModule(store, rootState, path.concat(key), child, hot)
   })
-}
+} 
 
 /**
  * make localized dispatch, commit, getters and state

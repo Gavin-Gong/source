@@ -48,7 +48,7 @@ export default {
           return
         }
         // 往 _subscription 添加 subscription
-        // TODO: 哪来的 subscribe 方法
+        // 添加订阅关系
         vm._subscription.add(obs[key].subscribe(value => {
           vm[key] = value // 更新 next 下来的值
         }, (error) => { throw error }))
