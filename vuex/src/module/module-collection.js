@@ -1,12 +1,18 @@
 import Module from './module'
 import { assert, forEachValue } from '../util'
 
+/**
+ * @desc 模块集合 Class
+ */
 export default class ModuleCollection {
   constructor (rawRootModule) {
     // register root module (Vuex.Store options)
     this.register([], rawRootModule, false)
   }
 
+  /**
+   * @desc 根据给到的路径 reduce 层层深入获取到这个路径的 module
+   */
   get (path) {
     return path.reduce((module, key) => {
       return module.getChild(key)
@@ -34,11 +40,13 @@ export default class ModuleCollection {
     if (path.length === 0) {
       this.root = newModule
     } else {
-      const parent = this.get(path.slice(0, -1))
-      parent.addChild(path[path.length - 1], newModule)
+      const parent = this.get(path.slice(0, -1)) // 拿到路径的父 module
+      parent.addChild(path[path.length - 1], newModule) // 添加到 parent module
     }
 
     // register nested modules
+    // 处理 new Store({..., modules: {...}}}) 中的 modules
+    // 递归注册 child modules -> 因为会有 modules 嵌套 modules 的情况
     if (rawModule.modules) {
       forEachValue(rawModule.modules, (rawChildModule, key) => {
         this.register(path.concat(key), rawChildModule, runtime)

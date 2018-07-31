@@ -22,7 +22,7 @@ export class Store {
 
     const {
       plugins = [],
-      strict = false
+      strict = false // 默认非严格模式
     } = options
 
     // store internal state
@@ -61,17 +61,19 @@ export class Store {
     resetStoreVM(this, state)
 
     // apply plugins
+    // 注册插件
     plugins.forEach(plugin => plugin(this))
 
+    // devtool 插件
     if (Vue.config.devtools) {
       devtoolPlugin(this)
     }
   }
-
+  // 根 state 的 getter
   get state () {
     return this._vm._data.$$state
   }
-
+  // 根 state 的 setter
   set state (v) {
     if (process.env.NODE_ENV !== 'production') {
       assert(false, `use store.replaceState() to explicit replace store state.`)
@@ -114,13 +116,14 @@ export class Store {
 
   dispatch (_type, _payload) {
     // check object-style dispatch
+    // TODO: read
     const {
       type,
       payload
     } = unifyObjectStyle(_type, _payload)
 
     const action = { type, payload }
-    const entry = this._actions[type]
+    const entry = this._actions[type] // 对应某个type下的所有 action Promise函数 数组
     if (!entry) {
       if (process.env.NODE_ENV !== 'production') {
         console.error(`[vuex] unknown action type: ${type}`)
@@ -128,13 +131,16 @@ export class Store {
       return
     }
 
-    this._actionSubscribers.forEach(sub => sub(action, this.state))
+    this._actionSubscribers.forEach(sub => sub(action, this.state)) // TODO:
 
     return entry.length > 1
-      ? Promise.all(entry.map(handler => handler(payload)))
+      ? Promise.all(entry.map(handler => handler(payload))) // 处理 dispatch 一个 action, 但是这个action 对应有多个函数的情况
       : entry[0](payload)
   }
 
+  /**
+   * @desc 订阅然后返回一个解除订阅的函数
+   */
   subscribe (fn) {
     return genericSubscribe(fn, this._subscribers)
   }
@@ -190,6 +196,7 @@ export class Store {
     resetStore(this, true)
   }
 
+  // TODO:
   _withCommit (fn) {
     const committing = this._committing
     this._committing = true
@@ -198,6 +205,9 @@ export class Store {
   }
 }
 
+/**
+ * @desc 添加函数到订阅数组, 并且返回一个解除订阅的函数
+ */
 function genericSubscribe (fn, subs) {
   if (subs.indexOf(fn) < 0) {
     subs.push(fn)
@@ -307,7 +317,7 @@ function installModule (store, rootState, path, module, hot) {
   module.forEachChild((child, key) => {
     installModule(store, rootState, path.concat(key), child, hot)
   })
-} 
+}
 
 /**
  * make localized dispatch, commit, getters and state
@@ -452,6 +462,9 @@ function getNestedState (state, path) {
     : state
 }
 
+/**
+ * @desc 处理不同风格的参数方式 -> commit('xx', payload) | commit({type: 'xx', payload})
+ */
 function unifyObjectStyle (type, payload, options) {
   if (isObject(type) && type.type) {
     options = payload

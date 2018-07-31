@@ -8,7 +8,7 @@ export default class Module {
     this._children = Object.create(null)
     // Store the origin module object which passed by programmer
     this._rawModule = rawModule
-    const rawState = rawModule.state
+    const rawState = rawModule.state // 根 State
 
     // Store the origin module's state
     this.state = (typeof rawState === 'function' ? rawState() : rawState) || {}

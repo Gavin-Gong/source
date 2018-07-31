@@ -14,7 +14,7 @@ export function find (list, f) {
  * Deep copy the given object considering circular structure.
  * This function caches all nested objects and its copies.
  * If it detects circular structure, use cached copy to avoid infinite loop.
- *
+ * @desc 深度拷贝
  * @param {*} obj
  * @param {Array<Object>} cache
  * @return {*}
@@ -47,20 +47,29 @@ export function deepCopy (obj, cache = []) {
 }
 
 /**
- * forEach for object
+ * @desc 遍历对象
  */
 export function forEachValue (obj, fn) {
   Object.keys(obj).forEach(key => fn(obj[key], key))
 }
 
+/**
+ * @desc 判断是不是对象
+ */
 export function isObject (obj) {
   return obj !== null && typeof obj === 'object'
 }
 
+/**
+ * @desc 判断是不是 Promise, TODO: why not instanceof
+ */
 export function isPromise (val) {
   return val && typeof val.then === 'function'
 }
 
+/**
+ * @desc 条件断言
+ */
 export function assert (condition, msg) {
   if (!condition) throw new Error(`[vuex] ${msg}`)
 }
