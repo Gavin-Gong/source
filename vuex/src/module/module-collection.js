@@ -30,7 +30,9 @@ export default class ModuleCollection {
   update (rawRootModule) {
     update([], this.root, rawRootModule)
   }
-
+  /**
+   * @desc 注册所有 modules 然后将一整颗 module 实例树挂到 this.root
+   */
   register (path, rawModule, runtime = true) {
     if (process.env.NODE_ENV !== 'production') {
       assertRawModule(path, rawModule)

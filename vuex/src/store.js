@@ -266,6 +266,7 @@ function resetStoreVM (store, state, hot) {
     enableStrictMode(store)
   }
 
+  // 销毁之前的 vm 实例
   if (oldVm) {
     if (hot) {
       // dispatch changes in all subscribed watchers
@@ -292,7 +293,7 @@ function installModule (store, rootState, path, module, hot) {
     const parentState = getNestedState(rootState, path.slice(0, -1))
     const moduleName = path[path.length - 1]
     store._withCommit(() => {
-      Vue.set(parentState, moduleName, module.state)
+      Vue.set(parentState, moduleName, module.state) // 响应式
     })
   }
 
@@ -399,6 +400,9 @@ function makeLocalGetters (store, namespace) {
   return gettersProxy
 }
 
+/**
+ * @desc 每个 mutation 对应一个数组的 handler, 一旦 commit, 应该会执行这个数组所有的函数
+ */
 function registerMutation (store, type, handler, local) {
   const entry = store._mutations[type] || (store._mutations[type] = [])
   entry.push(function wrappedMutationHandler (payload) {
@@ -406,6 +410,9 @@ function registerMutation (store, type, handler, local) {
   })
 }
 
+/**
+ * @desc action 对应的 handler 数组中的函数 执行之后都会返回一个 Promise 实例
+ */
 function registerAction (store, type, handler, local) {
   const entry = store._actions[type] || (store._actions[type] = [])
   entry.push(function wrappedActionHandler (payload, cb) {
@@ -417,6 +424,8 @@ function registerAction (store, type, handler, local) {
       rootGetters: store.getters,
       rootState: store.state
     }, payload, cb)
+
+    // 处理非异步函数的情况, 所以 action 支持异步
     if (!isPromise(res)) {
       res = Promise.resolve(res)
     }
