@@ -88,5 +88,11 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
+  modules: {
+    nest: {
+      namespaced: false,
+      state: '??'
+    }
+  }
 }

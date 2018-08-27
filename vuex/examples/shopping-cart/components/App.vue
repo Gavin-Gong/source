@@ -14,6 +14,10 @@ import ProductList from './ProductList.vue'
 import ShoppingCart from './ShoppingCart.vue'
 
 export default {
-  components: { ProductList, ShoppingCart }
+  components: { ProductList, ShoppingCart },
+  created() {
+    console.log(this.$store)
+    this.$store.state = {}
+  }
 }
 </script>

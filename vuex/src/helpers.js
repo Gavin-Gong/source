@@ -122,6 +122,7 @@ export const createNamespacedHelpers = (namespace) => ({
 })
 
 /**
+ * @desc 为了兼容数组和对象的写法 -> 统一转化一遍
  * Normalize the map
  * normalizeMap([1, 2, 3]) => [ { key: 1, val: 1 }, { key: 2, val: 2 }, { key: 3, val: 3 } ]
  * normalizeMap({a: 1, b: 2, c: 3}) => [ { key: 'a', val: 1 }, { key: 'b', val: 2 }, { key: 'c', val: 3 } ]
@@ -135,7 +136,9 @@ function normalizeMap (map) {
 }
 
 /**
- * Return a function expect two param contains namespace and map. it will normalize the namespace and then the param's function will handle the new namespace and the map.
+ * Return a function expect two param contains namespace and map.
+ * it will normalize the namespace
+ * and then the param's function will handle the new namespace and the map.
  * @param {Function} fn
  * @return {Function}
  */
@@ -152,7 +155,8 @@ function normalizeNamespace (fn) {
 }
 
 /**
- * Search a special module from store by namespace. if module not exist, print error message.
+ * Search a special module from store by namespace.
+ * if module not exist, print error message.
  * @param {Object} store
  * @param {String} helper
  * @param {String} namespace

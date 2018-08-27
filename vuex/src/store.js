@@ -31,7 +31,7 @@ export class Store {
     this._actionSubscribers = []
     this._mutations = Object.create(null)
     this._wrappedGetters = Object.create(null)
-    this._modules = new ModuleCollection(options)
+    this._modules = new ModuleCollection(options) // 生成一颗模块树
     this._modulesNamespaceMap = Object.create(null)
     this._subscribers = []
     this._watcherVM = new Vue()
@@ -196,7 +196,9 @@ export class Store {
     resetStore(this, true)
   }
 
-  // TODO:
+  /**
+   * @desc 修改 state 的时候调用这个函数
+   */
   _withCommit (fn) {
     const committing = this._committing
     this._committing = true
@@ -248,7 +250,7 @@ function resetStoreVM (store, state, hot) {
     })
   })
 
-  // use a Vue instance to store the state tree
+  // 用一个 Vue 实例来存储 state
   // suppress warnings just in case the user has added
   // some funky global mixins
   const silent = Vue.config.silent
@@ -279,6 +281,9 @@ function resetStoreVM (store, state, hot) {
   }
 }
 
+/**
+ * @desc 拿到 module tree, 然后注册相关的 action mutation getter
+ */
 function installModule (store, rootState, path, module, hot) {
   const isRoot = !path.length
   const namespace = store._modules.getNamespace(path)
@@ -296,7 +301,7 @@ function installModule (store, rootState, path, module, hot) {
       Vue.set(parentState, moduleName, module.state) // 响应式
     })
   }
-
+  // 处理 module 局部作用域, 拿到 context
   const local = module.context = makeLocalContext(store, namespace, path)
 
   module.forEachMutation((mutation, key) => {
@@ -323,10 +328,13 @@ function installModule (store, rootState, path, module, hot) {
 /**
  * make localized dispatch, commit, getters and state
  * if there is no namespace, just use root ones
+ * @desc 其实是生成 context
+ * 这也是为什么文档上说 commit 的参数 context 不是 store 实例本身,
+ * 因为中间 wrapper 了一层, 处理了下 namespace 的情况
  */
 function makeLocalContext (store, namespace, path) {
   const noNamespace = namespace === ''
-
+  // 包装 dispatch 和 commit
   const local = {
     dispatch: noNamespace ? store.dispatch : (_type, _payload, _options) => {
       const args = unifyObjectStyle(_type, _payload, _options)
@@ -363,6 +371,7 @@ function makeLocalContext (store, namespace, path) {
 
   // getters and state object must be gotten lazily
   // because they will be changed by vm update
+  // 再附加上 getter 和 state
   Object.defineProperties(local, {
     getters: {
       get: noNamespace
@@ -440,13 +449,18 @@ function registerAction (store, type, handler, local) {
   })
 }
 
+/**
+ * @desc 注册 getters
+ */
 function registerGetter (store, type, rawGetter, local) {
+  // 不允许重复
   if (store._wrappedGetters[type]) {
     if (process.env.NODE_ENV !== 'production') {
       console.error(`[vuex] duplicate getter key: ${type}`)
     }
     return
   }
+  // TODO:
   store._wrappedGetters[type] = function wrappedGetter (store) {
     return rawGetter(
       local.state, // local state
@@ -458,13 +472,17 @@ function registerGetter (store, type, rawGetter, local) {
 }
 
 function enableStrictMode (store) {
+  // 观察 Vue 实例变化的一个计算属性函数
   store._vm.$watch(function () { return this._data.$$state }, () => {
     if (process.env.NODE_ENV !== 'production') {
       assert(store._committing, `do not mutate vuex store state outside mutation handlers.`)
     }
-  }, { deep: true, sync: true })
+  }, { deep: true, sync: true }) // TODO: 并没有在官方文档中看到 sync
 }
 
+/**
+ * @desc 获取内嵌 State
+ */
 function getNestedState (state, path) {
   return path.length
     ? path.reduce((state, key) => state[key], state)

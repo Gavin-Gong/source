@@ -1,7 +1,9 @@
 const devtoolHook =
   typeof window !== 'undefined' &&
   window.__VUE_DEVTOOLS_GLOBAL_HOOK__
-
+/**
+ *@desc 涉及 vue devtool API 先跳过
+ */
 export default function devtoolPlugin (store) {
   if (!devtoolHook) return
 

@@ -27,7 +27,7 @@ export default {
     })
   },
   methods: {
-    checkout (products) {
+    checkout(products) {
       this.$store.dispatch('cart/checkout', products)
     }
   }

@@ -16,6 +16,9 @@ export default {
   components: {
     ThreadSection,
     MessageSection
-  }
+  },
+  created() {
+    console.log(this.$store)
+  },
 }
 </script>
