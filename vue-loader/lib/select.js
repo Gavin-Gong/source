@@ -1,3 +1,10 @@
+/**
+ * @desc 代码块选择, 返回源码流到 webpack loader
+ * @param {*} descriptor
+ * @param {*} loaderContext
+ * @param {*} query
+ * @param {*} appendExtension
+ */
 module.exports = function selectBlock (
   descriptor,
   loaderContext,

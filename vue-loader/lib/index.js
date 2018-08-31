@@ -24,10 +24,14 @@ function loadTemplateCompiler () {
     )
   }
 }
-
+/**
+ *
+ * @param {String} source Vue 文件字符流, 一个匹配到的函数调用一次这货
+ */
 module.exports = function (source) {
-  const loaderContext = this
+  const loaderContext = this // webpack loader 的 ctx
 
+  // 判断是否调用内置 plugin TODO:
   if (!errorEmitted && !loaderContext['thread-loader'] && !loaderContext[NS]) {
     loaderContext.emitError(new Error(
       `vue-loader was used without the corresponding plugin. ` +
@@ -39,38 +43,41 @@ module.exports = function (source) {
   const stringifyRequest = r => loaderUtils.stringifyRequest(loaderContext, r)
 
   const {
-    target,
-    request,
-    minimize,
-    sourceMap,
-    rootContext,
-    resourcePath,
-    resourceQuery
+    target, // 编译目标, 可以区分 node 还是 web
+    request, // request 字符串 "/abc/loader1.js?xyz!/abc/node_modules/loader2/index.js!/abc/resource.js?rrr"
+    minimize, // 是否应该被压缩
+    sourceMap, // 是否生成 sm
+    rootContext, // webpack 这垃圾文档, 解析配置的入口起点 一般为工作目录
+    resourcePath, // 资源文件的路径。
+    resourceQuery // 资源的query 参数 类似 `?xxx`
   } = loaderContext
-
-  const rawQuery = resourceQuery.slice(1)
+  // console.log(resourceQuery)
+  const rawQuery = resourceQuery.slice(1) // resourceQuery 是 `?xx=xx`的形式, 所以去掉第一个问号
   const inheritQuery = `&${rawQuery}`
-  const incomingQuery = qs.parse(rawQuery)
-  const options = loaderUtils.getOptions(loaderContext) || {}
+  const incomingQuery = qs.parse(rawQuery) // `foo=bar` -> {foo: bar}
+  const options = loaderUtils.getOptions(loaderContext) || {} // 通过 loaderUtils 拿到配置选项
 
-  const isServer = target === 'node'
-  const isShadow = !!options.shadowMode
-  const isProduction = options.productionMode || minimize || process.env.NODE_ENV === 'production'
-  const filename = path.basename(resourcePath)
-  const context = rootContext || process.cwd()
+  const isServer = target === 'node' // flag
+  const isShadow = !!options.shadowMode // shadowMode opt
+  const isProduction = options.productionMode || minimize || process.env.NODE_ENV === 'production' // mode
+  const filename = path.basename(resourcePath) // 根据文件路径拿到文件名
+  const context = rootContext || process.cwd() // ctx 配置目录
   const sourceRoot = path.dirname(path.relative(context, resourcePath))
 
+  // 解析出一个源文件描述对象
   const descriptor = parse({
-    source,
-    compiler: options.compiler || loadTemplateCompiler(),
-    filename,
-    sourceRoot,
-    needMap: sourceMap
+    source, // 源
+    compiler: options.compiler || loadTemplateCompiler(), // 指定 compiler
+    filename, // 文件名
+    sourceRoot, // 文件根目录
+    needMap: sourceMap // 是否需要 sm
   })
 
   // if the query has a type field, this is a language block request
   // e.g. foo.vue?type=template&id=xxxxx
   // and we will return early
+  // 判断是不是单文件组件中的语言块类型参数, type 一般为 script style HTML, 当然也可能自定义
+  // 如果指定了类型直接返回 Block
   if (incomingQuery.type) {
     return selectBlock(
       descriptor,
@@ -104,6 +111,7 @@ module.exports = function (source) {
   )
 
   // template
+  // 处理模板渲染
   let templateImport = `var render, staticRenderFns`
   let templateRequest
   if (descriptor.template) {
@@ -113,10 +121,11 @@ module.exports = function (source) {
     const attrsQuery = attrsToQuery(descriptor.template.attrs)
     const query = `?vue&type=template${idQuery}${scopedQuery}${attrsQuery}${inheritQuery}`
     const request = templateRequest = stringifyRequest(src + query)
-    templateImport = `import { render, staticRenderFns } from ${request}`
+    templateImport = `import { render, staticRenderFns } from ${request}` // 注入渲染函数
   }
 
   // script
+  // 处理 js 加载
   let scriptImport = `var script = {}`
   if (descriptor.script) {
     const src = descriptor.script.src || resourcePath
@@ -130,6 +139,7 @@ module.exports = function (source) {
   }
 
   // styles
+  // 处理样式
   let stylesCode = ``
   if (descriptor.styles.length) {
     stylesCode = genStylesCode(

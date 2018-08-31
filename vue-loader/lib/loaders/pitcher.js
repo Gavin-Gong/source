@@ -10,6 +10,10 @@ const isNullLoader = l => /(\/|\\|@)null-loader/.test(l.path)
 const isCSSLoader = l => /(\/|\\|@)css-loader/.test(l.path)
 const isPitcher = l => l.path !== __filename
 
+/**
+ * @desc 去重 eslint
+ * @param {*} loaders
+ */
 const dedupeESLintLoader = loaders => {
   const res = []
   let seen = false
@@ -28,6 +32,8 @@ module.exports = code => code
 
 // This pitching loader is responsible for intercepting all vue block requests
 // and transform it into appropriate requests.
+
+// 拦截并转化 vue 文件的资源请求
 module.exports.pitch = function (remainingRequest) {
   const options = loaderUtils.getOptions(this)
   const { cacheDirectory, cacheIdentifier } = options
@@ -94,7 +100,8 @@ module.exports.pitch = function (remainingRequest) {
         stylePostLoaderPath,
         ...beforeLoaders
       ])
-      // console.log(request)
+      console.log(request)
+      // 最终转化为 inline loader
       return `import mod from ${request}; export default mod; export * from ${request}`
     }
   }
