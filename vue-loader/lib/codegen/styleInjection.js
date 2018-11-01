@@ -1,6 +1,16 @@
 const { attrsToQuery } = require('./utils')
 const hotReloadAPIPath = JSON.stringify(require.resolve('vue-hot-reload-api'))
 
+/**
+ * @desc 生成样式注入代码
+ * @param {*} loaderContext
+ * @param {*} styles
+ * @param {*} id
+ * @param {*} resourcePath
+ * @param {*} stringifyRequest
+ * @param {*} needsHotReload
+ * @param {*} needsExplicitInjection
+ */
 module.exports = function genStyleInjectionCode (
   loaderContext,
   styles,
@@ -17,6 +27,9 @@ module.exports = function genStyleInjectionCode (
   let hasCSSModules = false
   const cssModuleNames = new Map()
 
+  /**
+   * @desc 样式注入请求
+   */
   function genStyleRequest (style, i) {
     const src = style.src || resourcePath
     const attrsQuery = attrsToQuery(style.attrs, 'css')
@@ -28,6 +41,12 @@ module.exports = function genStyleInjectionCode (
     return stringifyRequest(src + query)
   }
 
+  /**
+   * @desc 生成 css module 代码
+   * @param {*} style
+   * @param {*} request
+   * @param {*} i
+   */
   function genCSSModulesCode (style, request, i) {
     hasCSSModules = true
 
