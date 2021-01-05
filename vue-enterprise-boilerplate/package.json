@@ -32,7 +32,7 @@
     "@fortawesome/fontawesome-svg-core": "1.2.5",
     "@fortawesome/free-solid-svg-icons": "5.4.0",
     "@fortawesome/vue-fontawesome": "0.1.1",
-    "axios": "0.18.0",
+    "axios": "0.21.1",
     "lodash": "4.17.11",
     "normalize.css": "8.0.0",
     "nprogress": "0.2.0",
